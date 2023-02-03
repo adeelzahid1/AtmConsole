@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AtmConsole.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,12 @@ namespace AtmConsole.UI
             Utility.PressEnterToContinue();
         }
 
+
+        internal static void UserLoginForm()
+        {
+            UserAccount tempUserAccount = new UserAccount();
+
+        }
 
     }
 }
