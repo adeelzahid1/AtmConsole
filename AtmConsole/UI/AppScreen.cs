@@ -28,7 +28,13 @@ namespace AtmConsole.UI
         }
 
 
-       
+        internal static UserAccount UserLoginForm()
+        {
+            UserAccount tempUserAccount = new UserAccount();
+            tempUserAccount.CardNumber = Validator.Convert<long>("Your Card Number");
+            tempUserAccount.CardPin = Convert.ToInt32(Utility.GetSecretInput("Enter Your Card PIN "));
+            return tempUserAccount;
+        }
 
     }
 }

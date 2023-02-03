@@ -21,8 +21,10 @@ namespace AtmConsole.App
 
         public void CheckUserCardNumAndPassword()
         {
-            UserAccount tempUserAccount = new UserAccount();
-            tempUserAccount.CardNumber = Validator.Convert<long>("Your Card Number");
+
+            UserAccount inputAccount =  AppScreen.UserLoginForm();
+            Console.WriteLine($"{inputAccount.CardNumber} : {inputAccount.CardPin}");
+
         }
 
     }
