@@ -12,6 +12,21 @@ namespace AtmConsole.UI
             Console.WriteLine("\n\nPress Enter to continue...\n");
             Console.ReadLine();
         }
+
+        public static string GetUserInput()
+        {
+            Console.WriteLine("Enter you Card Number");
+            return Console.ReadLine();
+        }
+
+        public static string GetUserCardPin()
+        {
+            Console.WriteLine("Enter you Card PIN");
+            return Console.ReadLine();
+        }
+
+
+
     }
 }
 

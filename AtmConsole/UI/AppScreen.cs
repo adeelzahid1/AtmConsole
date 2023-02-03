@@ -31,7 +31,7 @@ namespace AtmConsole.UI
         internal static void UserLoginForm()
         {
             UserAccount tempUserAccount = new UserAccount();
-
+            tempUserAccount.CardNumber = Validator.Convert();
         }
 
     }
