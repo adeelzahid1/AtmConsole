@@ -13,9 +13,9 @@ namespace AtmConsole.UI
             Console.ReadLine();
         }
 
-        public static string GetUserInput()
+        public static string GetUserInput(string prompt)
         {
-            Console.WriteLine("Enter you Card Number");
+            Console.WriteLine($"Enter + {prompt}");
             return Console.ReadLine();
         }
 
@@ -23,6 +23,22 @@ namespace AtmConsole.UI
         {
             Console.WriteLine("Enter you Card PIN");
             return Console.ReadLine();
+        }
+
+        public static void PrintMessage(string msg, bool success = true)
+        {
+            if (success)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+
+            Console.WriteLine(msg);
+            Console.ForegroundColor = ConsoleColor.White;
+            PressEnterToContinue();
         }
 
 

@@ -14,6 +14,7 @@ namespace AtmConsole.App
             AppScreen.Welcome();
             AtmConsole atm = new AtmConsole();
             atm.InitializeData();
+            atm.CheckUserCardNumAndPassword();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,33 @@ namespace AtmConsole.UI
 {
     public static class Validator
     {
-        public static int Convert()
+        public static T Convert<T>(string prompt)
         {
-            var userInput = Utility.GetUserInput();
-            Console.WriteLine(userInput);
-            return 00;
+            bool isValid = false;
+            string userInput;
+
+            while (!isValid) {
+                userInput = Utility.GetUserInput(prompt);
+               
+                try
+                {
+                    var converter = TypeDescriptor.GetConverter(typeof(T));
+                    if (converter != null)
+                    {
+                        return (T)converter.ConvertFromString(userInput);
+                    }
+                    else
+                    {
+                        return default;
+                    }
+                }
+                catch (Exception)
+                {
+                    Utility.PrintMessage("Invalid input . Try Again", false);                    
+                }
+            }
+            return default;
+
         }
         
 
