@@ -4,8 +4,10 @@ using AtmConsole.Domain.Entities.Enums;
 using AtmConsole.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
 using Transaction = AtmConsole.Domain.Entities.Transaction;
+using ConsoleTables;
 
 namespace AtmConsole.App
 {
@@ -17,6 +19,11 @@ namespace AtmConsole.App
         private const decimal minimumKeptAmount = 500;
         private readonly AppScreen screen;
 
+        public AtmConsole()
+        {
+            screen = new AppScreen();
+        }
+
         public void InitializeData() {
             userAccountList = new List<UserAccount>
            {
@@ -24,7 +31,9 @@ namespace AtmConsole.App
                 new UserAccount{Id=2, FullName = "Mohsin Nazir", AccountNumber=456789,CardNumber =654654, CardPin=456456,AccountBalance=4000.00m,IsLocked=false},
                 new UserAccount{Id=3, FullName = "Mudssar Hussain", AccountNumber=123555,CardNumber =987987, CardPin=789789,AccountBalance=2000.00m,IsLocked=true},
            };
+            _listOfTransactions = new List<Transaction>();
         }
+
 
         public void Run()
         {
@@ -82,15 +91,50 @@ namespace AtmConsole.App
                     Console.Clear();
                 }
             }
-
         }
+
+
+
+        // MAIN MENU OPTIONS LOGIC
+        protected void ProcessMenuoption()
+        {
+            switch (Validator.Convert<int>(" An Option: "))
+            {
+                case (int)AppMenu.CheckBalance:
+                    CheckBalance();
+                    break;
+                case (int)AppMenu.PlaceDeposit:
+                    PlaceDeposit();
+                    break;
+                case (int)AppMenu.MakeWithdrawal:
+                    MakeWithDrawal();
+                    break;
+                case (int)AppMenu.InternalTransfer:
+                    var internalTransfer = screen.InternalTransferForm();
+                    ProcessInternalTransfer(internalTransfer);
+                    break;
+                case (int)AppMenu.ViewTransaction:
+                    ViewTransaction();
+                    break;
+                case (int)AppMenu.Logout:
+                    AppScreen.LogoutProgress();
+                    Utility.PrintMessage("You have successfully logged out. Please collect " +
+                        "your ATM card.");
+                    Run();
+                    break;
+
+                default:
+                    Utility.PrintMessage("Invalid Option", false);
+                    break;
+            }
+        }
+
 
 
         public void CheckBalance()
         {
             Utility.PrintMessage($"Your account balance is: {Utility.FormatAmount(selectedAccount.AccountBalance)}");
         }
-
 
         public void PlaceDeposit()
         {
@@ -183,6 +227,22 @@ namespace AtmConsole.App
                 $"{Utility.FormatAmount(transaction_amt)}.", true);
         }
 
+        private bool PreviewBankNotesCount(int amount)
+        {
+            int thousandNotesCount = amount / 1000;
+            int fiveHundredNotesCount = (amount % 1000) / 500;
+
+            Console.WriteLine("\nSummary");
+            Console.WriteLine("------");
+            Console.WriteLine($"{AppScreen.cur}1000 X {thousandNotesCount} = {1000 * thousandNotesCount}");
+            Console.WriteLine($"{AppScreen.cur}500 X {fiveHundredNotesCount} = {500 * fiveHundredNotesCount}");
+            Console.WriteLine($"Total amount: {Utility.FormatAmount(amount)}\n\n");
+
+            int opt = Validator.Convert<int>("1 to confirm");
+            return opt.Equals(1);
+
+        }
+
         public void InsertTransaction(long _UserBankAccountId, TransactionType _tranType, decimal _tranAmount, string _desc)
         {
             //create a new transaction object
@@ -200,59 +260,27 @@ namespace AtmConsole.App
             _listOfTransactions.Add(transaction);
         }
 
-        private bool PreviewBankNotesCount(int amount)
+
+        public void ViewTransaction()
         {
-            int thousandNotesCount = amount / 1000;
-            int fiveHundredNotesCount = (amount % 1000) / 500;
-
-            Console.WriteLine("\nSummary");
-            Console.WriteLine("------");
-            Console.WriteLine($"{AppScreen.cur}1000 X {thousandNotesCount} = {1000 * thousandNotesCount}");
-            Console.WriteLine($"{AppScreen.cur}500 X {fiveHundredNotesCount} = {500 * fiveHundredNotesCount}");
-            Console.WriteLine($"Total amount: {Utility.FormatAmount(amount)}\n\n");
-
-            int opt = Validator.Convert<int>("1 to confirm");
-            return opt.Equals(1);
-
-        }
-
-
-
-        // MAIN MENU OPTIONS LOGIC
-        protected void ProcessMenuoption()
-        {
-            switch (Validator.Convert<int>(" An Option: "))
+            var filteredTransactionList = _listOfTransactions.Where(t => t.UserBankAccountId == selectedAccount.Id).ToList();
+            //check if there's a transaction
+            if (filteredTransactionList.Count <= 0)
             {
-                case (int)AppMenu.CheckBalance:
-                    CheckBalance();
-                    break;
-                case (int)AppMenu.PlaceDeposit:
-                    PlaceDeposit();
-                    break;
-                case (int)AppMenu.MakeWithdrawal:
-                    MakeWithDrawal();
-                    break;
-                case (int)AppMenu.InternalTransfer:
-                    var internalTransfer = screen.InternalTransferForm();
-                    ProcessInternalTransfer(internalTransfer);
-                    break;
-
-                case (int)AppMenu.Logout:
-                    AppScreen.LogoutProgress();
-                    Utility.PrintMessage("You have successfully logged out. Please collect " +
-                        "your ATM card.");
-                    Run();
-                    break;
-
-                default:
-                    Utility.PrintMessage("Invalid Option", false);
-                    break;
+                Utility.PrintMessage("You have no transaction yet.", true);
+            }
+            else
+            {
+                var table = new ConsoleTable("Id", "Transaction Date", "Type", "Descriptions", "Amount " + AppScreen.cur);
+                foreach (var tran in filteredTransactionList)
+                {
+                    table.AddRow(tran.TransactionId, tran.TransactionDate, tran.TransactionType, tran.Descriprion, tran.TransactionAmount);
+                }
+                table.Options.EnableCount = false;
+                table.Write();
+                Utility.PrintMessage($"You have {filteredTransactionList.Count} transaction(s)", true);
             }
         }
-
-
-
-
 
         private void ProcessInternalTransfer(InternalTransfer internalTransfer)
         {
@@ -275,11 +303,40 @@ namespace AtmConsole.App
                     $" {Utility.FormatAmount(minimumKeptAmount)}", false);
                 return;
             }
+
+            //check reciever's account number is valid
+            var selectedBankAccountReciever = (from userAcc in userAccountList
+                                               where userAcc.AccountNumber == internalTransfer.ReciepeintBankAccountNumber
+                                               select userAcc).FirstOrDefault();
+            if (selectedBankAccountReciever == null)
+            {
+                Utility.PrintMessage("Transfer failed. Recieber bank account number is invalid.", false);
+                return;
+            }
+            //check receiver's name
+            if (selectedBankAccountReciever.FullName != internalTransfer.RecipientBankAccountName)
+            {
+                Utility.PrintMessage("Transfer Failed. Recipient's bank account name does not match.", false);
+                return;
+            }
+
+            //add transaction to transactions record- sender
+            InsertTransaction(selectedAccount.Id, TransactionType.Transfer, -internalTransfer.TransferAmount, "Transfered " +
+                $"to {selectedBankAccountReciever.AccountNumber} ({selectedBankAccountReciever.FullName})");
+            //update sender's account balance
+            selectedAccount.AccountBalance -= internalTransfer.TransferAmount;
+
+            //add transaction record-reciever
+            InsertTransaction(selectedBankAccountReciever.Id, TransactionType.Transfer, internalTransfer.TransferAmount, "Transfered from " +
+                $"{selectedAccount.AccountNumber}({selectedAccount.FullName})");
+            //update reciever's account balance
+            selectedBankAccountReciever.AccountBalance += internalTransfer.TransferAmount;
+            //print success message
+            Utility.PrintMessage($"You have successfully transfered" +
+                $" {Utility.FormatAmount(internalTransfer.TransferAmount)} to " +
+                $"{internalTransfer.RecipientBankAccountName}", true);
+
         }
-
-
-
-
-
-        }
+    
+    }
 }
