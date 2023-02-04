@@ -1,4 +1,5 @@
-﻿using AtmConsole.Domain.Entities;
+﻿using AtmConsole.Domain;
+using AtmConsole.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AtmConsole.UI
 {
-    public static class AppScreen
+    public  class AppScreen
     {
         internal const string cur = " PKR ";
         internal static void Welcome()
@@ -126,8 +127,14 @@ namespace AtmConsole.UI
             }
         }
 
-
+        internal InternalTransfer InternalTransferForm()
+        {
+            var internalTransfer = new InternalTransfer();
+            internalTransfer.ReciepeintBankAccountNumber = Validator.Convert<long>("recipient's account number:");
+            internalTransfer.TransferAmount = Validator.Convert<decimal>($"amount {cur}");
+            internalTransfer.RecipientBankAccountName = Utility.GetUserInput("recipient's name:");
+            return internalTransfer;
         }
+
+    }
 }
-
-

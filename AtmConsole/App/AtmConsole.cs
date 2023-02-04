@@ -1,4 +1,5 @@
-﻿using AtmConsole.Domain.Entities;
+﻿using AtmConsole.Domain;
+using AtmConsole.Domain.Entities;
 using AtmConsole.Domain.Entities.Enums;
 using AtmConsole.UI;
 using System;
@@ -14,6 +15,7 @@ namespace AtmConsole.App
         private UserAccount selectedAccount;
         private List<Transaction> _listOfTransactions;
         private const decimal minimumKeptAmount = 500;
+        private readonly AppScreen screen;
 
         public void InitializeData() {
             userAccountList = new List<UserAccount>
@@ -228,10 +230,12 @@ namespace AtmConsole.App
                     PlaceDeposit();
                     break;
                 case (int)AppMenu.MakeWithdrawal:
-
+                    MakeWithDrawal();
                     break;
-
-
+                case (int)AppMenu.InternalTransfer:
+                    var internalTransfer = screen.InternalTransferForm();
+                    ProcessInternalTransfer(internalTransfer);
+                    break;
 
                 case (int)AppMenu.Logout:
                     AppScreen.LogoutProgress();
@@ -248,5 +252,34 @@ namespace AtmConsole.App
 
 
 
-    }
+
+
+        private void ProcessInternalTransfer(InternalTransfer internalTransfer)
+        {
+            if (internalTransfer.TransferAmount <= 0)
+            {
+                Utility.PrintMessage("Amount needs to be more than zero. Try again.", false);
+                return;
+            }
+            //check sender's account balance
+            if (internalTransfer.TransferAmount > selectedAccount.AccountBalance)
+            {
+                Utility.PrintMessage($"Transfer failed. You do not hav enough balance" +
+                    $" to transfer {Utility.FormatAmount(internalTransfer.TransferAmount)}", false);
+                return;
+            }
+            //check the minimum kept amount 
+            if ((selectedAccount.AccountBalance - internalTransfer.TransferAmount) < minimumKeptAmount)
+            {
+                Utility.PrintMessage($"Transfer faile. Your account needs to have minimum" +
+                    $" {Utility.FormatAmount(minimumKeptAmount)}", false);
+                return;
+            }
+        }
+
+
+
+
+
+        }
 }
