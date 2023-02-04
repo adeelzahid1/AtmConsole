@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -10,6 +11,14 @@ namespace AtmConsole.UI
 {
     public static class Utility
     {
+        private static long tranId;
+        private static CultureInfo culture = new CultureInfo("PKR-PK");
+
+        public static long GetTransactionId()
+        {
+            return ++tranId;
+        }
+
         public static void PressEnterToContinue(){
             Console.WriteLine("\n\nPress Enter to continue...\n");
             Console.ReadLine();
@@ -92,6 +101,11 @@ namespace AtmConsole.UI
             Console.Clear();
         }
 
+
+        public static string FormatAmount(decimal amt)
+        {
+            return String.Format(culture, "{0:C2}", amt);
+        }
 
 
     }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace AtmConsole.UI
 {
     public static class AppScreen
     {
+        internal const string cur = "PKR ";
         internal static void Welcome()
         {
             Console.Clear();
@@ -50,9 +52,40 @@ namespace AtmConsole.UI
             Environment.Exit(1);
         }
 
+        internal static void DisplayAppMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("-------My ATM App Menu-------");
+            Console.WriteLine(":                           :");
+            Console.WriteLine("1. Account Balance          :");
+            Console.WriteLine("2. Cash Deposit             :");
+            Console.WriteLine("3. Withdrawal               :");
+            Console.WriteLine("4. Transfer                 :");
+            Console.WriteLine("5. Transactions             :");
+            Console.WriteLine("6. Logout                   :");
+        }
+
+        internal static void LogoutProgress()
+        {
+            Console.WriteLine("Thank you for using My ATM App.");
+            Utility.PrintDotAnimation();
+            Console.Clear();
+        }
 
 
-    }
+        internal static void SelectAmount()
+        {
+            Console.WriteLine("");
+            Console.WriteLine(":1.{0}500      5.{0}10,000", cur);
+            Console.WriteLine(":2.{0}1000     6.{0}15,000", cur);
+            Console.WriteLine(":3.{0}2000     7.{0}20,000", cur);
+            Console.WriteLine(":4.{0}5000     8.{0}40,000", cur);
+            Console.WriteLine(":0.Other");
+            Console.WriteLine("");
+        }
+
+
+        }
 }
 
 

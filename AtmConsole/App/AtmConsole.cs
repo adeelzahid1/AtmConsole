@@ -22,17 +22,14 @@ namespace AtmConsole.App
         public void CheckUserCardNumAndPassword()
         {
             bool isCorrectLogin = false;
-            while(isCorrectLogin == false)
+            while (isCorrectLogin == false)
             {
-                UserAccount inputAccount =  AppScreen.UserLoginForm();
-                Console.WriteLine($"{inputAccount.CardNumber} : {inputAccount.CardPin}");
+                UserAccount inputAccount = AppScreen.UserLoginForm();
                 AppScreen.LoginProgress();
-
                 foreach (UserAccount account in userAccountList)
                 {
                     selectedAccount = account;
-
-                    if(inputAccount.AccountNumber.Equals(selectedAccount.AccountNumber))
+                    if (inputAccount.CardNumber.Equals(selectedAccount.CardNumber))
                     {
                         selectedAccount.TotalLogin++;
 
@@ -51,21 +48,18 @@ namespace AtmConsole.App
                                 break;
                             }
                         }
-                        if(isCorrectLogin == false ) 
-                        {
-                            Utility.PrintMessage("\nInvalid card number or PIN.", false);
-                            selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
-                            if (selectedAccount.IsLocked)
-                            {
-                                AppScreen.PrintLockScreen();
-                            }
-                        }
-                        Console.Clear();
-
-
                     }
+                    if (isCorrectLogin == false)
+                    {
+                        Utility.PrintMessage("\nInvalid card number or PIN.", false);
+                        selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
+                        if (selectedAccount.IsLocked)
+                        {
+                            AppScreen.PrintLockScreen();
+                        }
+                    }
+                    Console.Clear();
                 }
-
             }
 
         }
