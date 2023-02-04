@@ -17,8 +17,6 @@ namespace AtmConsole.UI
             Console.Clear();
             Console.Title = "SUPER ATM";
 
-
-            Console.WriteLine("Hello World!");
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.WriteLine("\n\n-----------------Welcome to My ATM App-----------------\n\n");

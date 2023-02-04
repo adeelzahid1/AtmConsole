@@ -8,10 +8,11 @@ using System.Linq;
 using System.Transactions;
 using Transaction = AtmConsole.Domain.Entities.Transaction;
 using ConsoleTables;
+using AtmConsole.Interface;
 
 namespace AtmConsole.App
 {
-    public class AtmConsole
+    public class AtmConsole : IUserLogin, IUserAccountActions, ITransaction
     {
         private List<UserAccount> userAccountList;
         private UserAccount selectedAccount;
