@@ -23,6 +23,20 @@ namespace AtmConsole.App
            };
         }
 
+        public void Run()
+        {
+            AppScreen.Welcome();
+            CheckUserCardNumAndPassword();
+            AppScreen.WelcomeCustomer(selectedAccount.FullName);
+            while (true)
+            {
+                AppScreen.DisplayAppMenu();
+                ProcessMenuoption();
+            }
+        }
+
+
+
         public void CheckUserCardNumAndPassword()
         {
             bool isCorrectLogin = false;
@@ -147,6 +161,36 @@ namespace AtmConsole.App
 
         }
 
+
+
+        // MAIN MENU OPTIONS LOGIC
+        protected void ProcessMenuoption()
+        {
+            switch (Validator.Convert<int>(" An Option: "))
+            {
+                case (int)AppMenu.CheckBalance:
+                    CheckBalance();
+                    break;
+                case (int)AppMenu.PlaceDeposit:
+                    PlaceDeposit();
+                    break;
+                case (int)AppMenu.MakeWithdrawal:
+                    break;
+
+
+
+                case (int)AppMenu.Logout:
+                    AppScreen.LogoutProgress();
+                    Utility.PrintMessage("You have successfully logged out. Please collect " +
+                        "your ATM card.");
+                    Run();
+                    break;
+
+                default:
+                    Utility.PrintMessage("Invalid Option", false);
+                    break;
+            }
+        }
 
 
 

@@ -44,6 +44,12 @@ namespace AtmConsole.UI
             Utility.PrintDotAnimation();
         }
 
+        internal static void WelcomeCustomer(string fullName)
+        {
+            Console.WriteLine($"Welcome back, {fullName}");
+            Utility.PressEnterToContinue();
+        }
+
         internal static void PrintLockScreen()
         {
             Console.Clear();

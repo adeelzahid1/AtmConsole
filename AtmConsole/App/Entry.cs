@@ -11,10 +11,10 @@ namespace AtmConsole.App
     {
         static void Main(string[] args)
         {
-            AppScreen.Welcome();
+            
             AtmConsole atm = new AtmConsole();
             atm.InitializeData();
-            atm.CheckUserCardNumAndPassword();
+            atm.Run();
         }
     }
 }
