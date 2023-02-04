@@ -8,7 +8,7 @@ namespace AtmConsole.App
     public class AtmConsole
     {
         private List<UserAccount> userAccountList;
-        private UserAccount userAccount;
+        private UserAccount selectedAccount;
 
         public void InitializeData() {
             userAccountList = new List<UserAccount>
@@ -21,9 +21,35 @@ namespace AtmConsole.App
 
         public void CheckUserCardNumAndPassword()
         {
+            bool isCorrectLogin = false;
+            while(isCorrectLogin == false)
+            {
+                UserAccount inputAccount =  AppScreen.UserLoginForm();
+                Console.WriteLine($"{inputAccount.CardNumber} : {inputAccount.CardPin}");
+                AppScreen.LoginProgress();
 
-            UserAccount inputAccount =  AppScreen.UserLoginForm();
-            Console.WriteLine($"{inputAccount.CardNumber} : {inputAccount.CardPin}");
+                foreach (UserAccount account in userAccountList)
+                {
+                    selectedAccount = account;
+
+                    if(inputAccount.AccountNumber.Equals(selectedAccount.AccountNumber))
+                    {
+                        selectedAccount.TotalLogin++;
+
+                        if (inputAccount.CardPin.Equals(selectedAccount.CardPin))
+                        {
+                            selectedAccount = account;
+
+
+                            if(selectedAccount.IsLocked || selectedAccount.TotalLogin > 3)
+                            {
+                                AppScreen.PrintLockScreen();
+                            }
+                        }
+                    }
+                }
+
+            }
 
         }
 

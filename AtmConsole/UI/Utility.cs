@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AtmConsole.UI
@@ -80,6 +81,16 @@ namespace AtmConsole.UI
             return input.ToString();
         }
 
+
+        public static void PrintDotAnimation(int timer = 10)
+        {
+            for(int i=0; i < timer; i++)
+            {
+                Console.Write(".");
+                Thread.Sleep(200);
+            }
+            Console.Clear();
+        }
 
 
 
