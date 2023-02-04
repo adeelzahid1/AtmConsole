@@ -13,6 +13,7 @@ namespace AtmConsole.App
         private List<UserAccount> userAccountList;
         private UserAccount selectedAccount;
         private List<Transaction> _listOfTransactions;
+        private const decimal minimumKeptAmount = 500;
 
         public void InitializeData() {
             userAccountList = new List<UserAccount>
@@ -91,7 +92,7 @@ namespace AtmConsole.App
 
         public void PlaceDeposit()
         {
-            Console.WriteLine("\nOnly multiples of 500 and 1000 naira allowed.\n");
+            Console.WriteLine("\nOnly multiples of 500 and 1000 PKR allowed.\n");
             var transaction_amt = Validator.Convert<int>($"amount {AppScreen.cur}");
 
             //simulate counting
@@ -126,6 +127,58 @@ namespace AtmConsole.App
             //print success message
             Utility.PrintMessage($"Your deposit of {Utility.FormatAmount(transaction_amt)} was " +
                 $"succesful.", true);
+        }
+
+        public void MakeWithDrawal()
+        {
+            var transaction_amt = 0;
+            int selectedAmount = AppScreen.SelectAmount();
+            if (selectedAmount == -1)
+            {
+                MakeWithDrawal();
+                return;
+            }
+            else if (selectedAmount != 0)
+            {
+                transaction_amt = selectedAmount;
+            }
+            else
+            {
+                transaction_amt = Validator.Convert<int>($"amount {AppScreen.cur}");
+            }
+
+            //input validation
+            if (transaction_amt <= 0)
+            {
+                Utility.PrintMessage("Amount needs to be greater than zero. Try agin", false);
+                return;
+            }
+            if (transaction_amt % 500 != 0)
+            {
+                Utility.PrintMessage("You can only withdraw amount in multiples of 500 or 1000 naira. Try again.", false);
+                return;
+            }
+            //Business logic validations
+
+            if (transaction_amt > selectedAccount.AccountBalance)
+            {
+                Utility.PrintMessage($"Withdrawal failed. Your balance is too low to withdraw" +
+                    $"{Utility.FormatAmount(transaction_amt)}", false);
+                return;
+            }
+            if ((selectedAccount.AccountBalance - transaction_amt) < minimumKeptAmount)
+            {
+                Utility.PrintMessage($"Withdrawal failed. Your account needs to have " +
+                    $"minimum {Utility.FormatAmount(minimumKeptAmount)}", false);
+                return;
+            }
+            //Bind withdrawal details to transaction object
+            InsertTransaction(selectedAccount.Id, TransactionType.Withdrawal, -transaction_amt, "");
+            //update account balance
+            selectedAccount.AccountBalance -= transaction_amt;
+            //success message
+            Utility.PrintMessage($"You have successfully withdrawn " +
+                $"{Utility.FormatAmount(transaction_amt)}.", true);
         }
 
         public void InsertTransaction(long _UserBankAccountId, TransactionType _tranType, decimal _tranAmount, string _desc)
@@ -175,6 +228,7 @@ namespace AtmConsole.App
                     PlaceDeposit();
                     break;
                 case (int)AppMenu.MakeWithdrawal:
+
                     break;
 
 
