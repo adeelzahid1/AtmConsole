@@ -40,12 +40,29 @@ namespace AtmConsole.App
                         {
                             selectedAccount = account;
 
-
-                            if(selectedAccount.IsLocked || selectedAccount.TotalLogin > 3)
+                            if (selectedAccount.IsLocked || selectedAccount.TotalLogin > 3)
+                            {
+                                AppScreen.PrintLockScreen();
+                            }
+                            else
+                            {
+                                selectedAccount.TotalLogin = 0;
+                                isCorrectLogin = true;
+                                break;
+                            }
+                        }
+                        if(isCorrectLogin == false ) 
+                        {
+                            Utility.PrintMessage("\nInvalid card number or PIN.", false);
+                            selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
+                            if (selectedAccount.IsLocked)
                             {
                                 AppScreen.PrintLockScreen();
                             }
                         }
+                        Console.Clear();
+
+
                     }
                 }
 
